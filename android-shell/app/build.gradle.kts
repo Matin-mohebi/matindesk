@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -26,7 +28,7 @@ android {
             val ksB64 = System.getenv("KEYSTORE_BASE64")
             if (!ksB64.isNullOrBlank()) {
                 val tmp = File.createTempFile("matindesk", ".jks")
-                tmp.writeBytes(java.util.Base64.getDecoder().decode(ksB64))
+                tmp.writeBytes(Base64.getDecoder().decode(ksB64))
                 storeFile = tmp
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
