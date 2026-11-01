@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="md_background">#0D1512</color>
+    <color name="md_accent">#10B981</color>
+    <color name="md_on_accent">#FFFFFF</color>
+</resources>

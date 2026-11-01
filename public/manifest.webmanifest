@@ -1,0 +1,25 @@
+{
+  "name": "MatinDesk — میزکار ماتین",
+  "short_name": "MatinDesk",
+  "description": "میزکار شخصی شما — وظایف، یادداشت‌ها، مالی و تقویم؛ با حساب کاربری، آمار دقیق، همگام‌سازی گیت‌هاب و کار آفلاین.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "fa",
+  "background_color": "#0d1512",
+  "theme_color": "#0d1512",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "وظایف — Tasks", "url": "/?view=tasks", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "یادداشت‌ها — Notes", "url": "/?view=notes", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "مالی — Finance", "url": "/?view=finance", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

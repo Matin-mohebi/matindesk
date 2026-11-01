@@ -1,0 +1,84 @@
+# MatinDesk — Android APK builder
+#
+# تولید فایل نصبی اندروید (APK) از پوسته بومی MatinDesk.
+# آدرس سرور را می‌توانید هنگام اجرا (Run workflow) وارد کنید یا در
+# Settings → Secrets and variables → Actions → Variables متغیر APP_URL تعریف کنید.
+#
+# برای امضای نسخه انتشار (release)، این Secrets را تنظیم کنید:
+#   KEYSTORE_BASE64   : فایل keystore به‌صورت Base64
+#   KEYSTORE_PASSWORD : گذرواژه keystore
+#   KEY_ALIAS         : نام کلید
+#   KEY_PASSWORD      : گذرواژه کلید
+
+name: Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: "آدرس سرور MatinDesk (مثلاً https://matindesk.onrender.com)"
+        required: false
+        default: "https://matindesk.onrender.com"
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths:
+      - "android-shell/**"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve server URL
+        id: url
+        run: |
+          URL="${{ github.event.inputs.app_url }}"
+          if [ -z "$URL" ]; then URL="${{ vars.APP_URL }}"; fi
+          if [ -z "$URL" ]; then URL="https://matindesk.onrender.com"; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "MatinDesk server URL: $URL"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        run: gradle -p android-shell assembleDebug -PappUrl="${{ steps.url.outputs.url }}"
+
+      - name: Build release APK (signed if secrets provided)
+        run: gradle -p android-shell assembleRelease -PappUrl="${{ steps.url.outputs.url }}"
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        continue-on-error: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: matindesk-apk
+          path: |
+            android-shell/app/build/outputs/apk/debug/*.apk
+            android-shell/app/build/outputs/apk/release/*.apk
+          if-no-files-found: warn
+
+      - name: Release on tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            android-shell/app/build/outputs/apk/debug/*.apk
+            android-shell/app/build/outputs/apk/release/*.apk
+          generate_release_notes: true

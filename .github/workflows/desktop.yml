@@ -1,0 +1,91 @@
+# MatinDesk — Desktop builds (Windows / macOS / Linux) via Tauri 2
+#
+# آدرس سرور را می‌توانید با متغیر APP_URL (repo variable) یا ورودی دستی تعیین کنید.
+# خروجی‌ها (exe/msi، dmg/app، deb/AppImage) در Artifacts همان اجرا قرار می‌گیرند.
+
+name: Desktop (Tauri)
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: "آدرس سرور MatinDesk"
+        required: false
+        default: "http://localhost:3000"
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths:
+      - "src-tauri/**"
+      - ".github/workflows/desktop.yml"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: macos
+          - os: ubuntu-22.04
+            name: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux deps (webkit2gtk)
+        if: matrix.name == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libssl-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Resolve server URL
+        id: url
+        shell: bash
+        run: |
+          URL="${{ github.event.inputs.app_url }}"
+          if [ -z "$URL" ]; then URL="${{ vars.APP_URL }}"; fi
+          if [ -z "$URL" ]; then URL="http://localhost:3000"; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Point the desktop shell to the server
+        shell: bash
+        run: |
+          sed -i.bak 's|http://localhost:3000|${{ steps.url.outputs.url }}|' src-tauri/tauri.conf.json
+          rm -f src-tauri/tauri.conf.json.bak
+
+      - name: Generate app icons
+        shell: bash
+        run: npx -y @tauri-apps/cli@^2 icon public/icons/icon-512.png
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: .
+          tauriScript: npx -y @tauri-apps/cli@^2
+          args: --config src-tauri/tauri.conf.json
+
+      - name: Upload bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: matindesk-desktop-${{ matrix.name }}
+          path: |
+            src-tauri/target/release/bundle/**
+          if-no-files-found: warn
+
+      - name: Release on tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src-tauri/target/release/bundle/**/*
+          generate_release_notes: true

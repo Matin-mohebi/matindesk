@@ -1,0 +1,16 @@
+services:
+  matindesk:
+    build: .
+    container_name: matindesk
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # حتماً تغییر دهید: openssl rand -hex 32
+      MATIN_SECRET: "${MATIN_SECRET:-change-me-to-a-64-hex-secret}"
+      DATABASE_URL: "file:/app/db/custom.db"
+    volumes:
+      - matindesk-data:/app/db
+
+volumes:
+  matindesk-data:

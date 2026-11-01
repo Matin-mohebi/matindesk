@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+db/*.db
+db/*.db-journal
+.env
+.env.*
+!.env.example
+dev.log
+server.log
+*.log
+android-shell/app/build
+src-tauri/target
+docs
