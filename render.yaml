@@ -1,0 +1,22 @@
+# Render Blueprint — MatinDesk
+# با این فایل، انتشار سرور روی Render فقط یک کلیک است:
+#   https://render.com/deploy?repo=https://github.com/Matin-mohebi/matindesk
+#
+# نکته: در پلن رایگان، دیسک موقتی است (بعد از هر استقرار داده‌ها صفر می‌شود).
+# برای نگه‌داری دائمی داده‌ها، در داشبورد Render سرویس را به پلن Starter ارتقا دهید
+# و یک Disk به مسیر /app/db اضافه کنید.
+
+services:
+  - type: web
+    name: matindesk
+    runtime: docker
+    plan: free
+    healthCheckPath: /api
+    autoDeploy: true
+    envVars:
+      - key: MATIN_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        value: file:/app/db/custom.db
+      - key: PORT
+        value: "3000"

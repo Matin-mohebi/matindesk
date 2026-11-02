@@ -39,6 +39,16 @@
 
 ## 🚀 شروع سریع (محلی)
 
+### 🌍 انتشار سرور با یک کلیک (Render)
+
+<div dir="ltr">
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Matin-mohebi/matindesk)
+
+</div>
+
+روی دکمه بزنید → با گیتهاب وارد Render شوید → **Apply**. سرور بالا می‌آید، `MATIN_SECRET` خودکار ساخته می‌شود و آدرس `https://matindesk.onrender.com` فعال است. سپس در تنظیمات Actions همین مخزن، متغیر `APP_URL` را با همان آدرس بگذارید تا APK اندروید به سرور شما وصل شود.
+
 <div dir="ltr">
 
 ```bash
