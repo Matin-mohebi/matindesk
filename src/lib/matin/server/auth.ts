@@ -26,9 +26,11 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 // ---------- GitHub PAT encryption at rest (AES-256-GCM) ----------
 function secretKey(): Buffer {
-  const secret =
-    process.env.MATIN_SECRET ||
-    "matindesk-fallback-secret-please-set-MATIN_SECRET-env";
+  const configured = process.env.MATIN_SECRET?.trim();
+  if (process.env.NODE_ENV === "production" && (!configured || configured.length < 32)) {
+    throw new Error("MATIN_SECRET must be configured with at least 32 characters in production");
+  }
+  const secret = configured || "matindesk-local-development-only-secret";
   return createHash("sha256").update(secret).digest();
 }
 

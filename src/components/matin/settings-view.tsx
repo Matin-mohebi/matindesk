@@ -117,7 +117,7 @@ export default function SettingsView() {
   async function restoreGh() {
     setGhBusy("restore");
     try {
-      await api("/api/github/backup");
+      await api("/api/github/backup/restore", { method: "POST" });
       await hydrate();
       toast.success(t.gh_restoreOk);
     } catch (e) {
