@@ -1,3 +1,5 @@
+**Android build:** `1.0.1` (`versionCode 2`) — next build; the latest published release remains `v1.0.0` until a signed release is created.
+
 <div dir="rtl">
 
 # 🗂 MatinDesk — میزکار ماتین
