@@ -110,8 +110,8 @@ export async function POST() {
   }
 }
 
-/** GET /api/github/backup — restore the account from the stored Gist. */
-export async function GET() {
+/** POST /api/github/backup — restore the account from the stored Gist. */
+export async function POST() {
   const user = await currentUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
@@ -127,6 +127,7 @@ export async function GET() {
     const gist = (await res.json()) as { files?: Record<string, { content?: string }> };
     const raw = gist.files?.[FILE_NAME]?.content;
     if (!raw) return NextResponse.json({ error: "no_backup_file" }, { status: 404 });
+    if (raw.length > 5 * 1024 * 1024) return NextResponse.json({ error: "backup_too_large" }, { status: 413 });
 
     const data = JSON.parse(raw);
     if (!validateBackup(data)) return NextResponse.json({ error: "invalid_backup" }, { status: 422 });
