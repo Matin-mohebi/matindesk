@@ -23,16 +23,22 @@ android {
     }
 
     // امضای نسخه انتشار — در CI از GitHub Secrets خوانده می‌شود (اختیاری)
-    signingConfigs {
-        create("release") {
-            val ksB64 = System.getenv("KEYSTORE_BASE64")
-            if (!ksB64.isNullOrBlank()) {
+    val ksB64 = System.getenv("KEYSTORE_BASE64")
+    val ksPassword = System.getenv("KEYSTORE_PASSWORD")
+    val keyAliasValue = System.getenv("KEY_ALIAS")
+    val keyPasswordValue = System.getenv("KEY_PASSWORD")
+    val releaseSigningConfigured = !ksB64.isNullOrBlank() &&
+        !ksPassword.isNullOrBlank() && !keyAliasValue.isNullOrBlank() && !keyPasswordValue.isNullOrBlank()
+
+    if (releaseSigningConfigured) {
+        signingConfigs {
+            create("release") {
                 val tmp = File.createTempFile("matindesk", ".jks")
                 tmp.writeBytes(Base64.getDecoder().decode(ksB64))
                 storeFile = tmp
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
+                storePassword = ksPassword
+                keyAlias = keyAliasValue
+                keyPassword = keyPasswordValue
             }
         }
     }
@@ -40,8 +46,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            val ks = System.getenv("KEYSTORE_BASE64")
-            signingConfig = if (!ks.isNullOrBlank()) signingConfigs.getByName("release") else null
+            signingConfig = if (releaseSigningConfigured) signingConfigs.getByName("release") else null
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
