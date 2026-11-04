@@ -19,6 +19,11 @@ on:
         description: "آدرس سرور MatinDesk (مثلاً https://matindesk.onrender.com)"
         required: false
         default: "https://matindesk.onrender.com"
+  pull_request:
+    branches: [main]
+    paths:
+      - "android-shell/**"
+      - ".github/workflows/android-apk.yml"
   push:
     branches: [main]
     tags: ["v*"]
