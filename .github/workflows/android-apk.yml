@@ -67,7 +67,7 @@ jobs:
         run: gradle -p android-shell assembleDebug -PappUrl="${{ steps.url.outputs.url }}"
 
       - name: Build signed release APK
-        if: env.KEYSTORE_BASE64 != ''
+        if: env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' && env.KEY_ALIAS != '' && env.KEY_PASSWORD != ''
         run: gradle -p android-shell assembleRelease -PappUrl="${{ steps.url.outputs.url }}"
 
       - name: Upload artifacts
