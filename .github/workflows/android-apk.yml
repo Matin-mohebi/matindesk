@@ -75,7 +75,6 @@ jobs:
         with:
           name: matindesk-apk
           path: |
-            android-shell/app/build/outputs/apk/debug/*.apk
             android-shell/app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
 
@@ -84,6 +83,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            android-shell/app/build/outputs/apk/debug/*.apk
             android-shell/app/build/outputs/apk/release/*.apk
           generate_release_notes: true
