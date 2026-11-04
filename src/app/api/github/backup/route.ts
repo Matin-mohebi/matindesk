@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { currentUser, getPat, ensureSettings } from "@/lib/matin/server/auth";
-import { validateBackup, restoreData } from "@/lib/matin/server/restore";
 
 export const runtime = "nodejs";
 
@@ -107,42 +106,5 @@ export async function POST() {
     return NextResponse.json({ ok: true, gistId, lastBackupAt: lastBackupAt.toISOString(), sizeKb: kb });
   } catch {
     return NextResponse.json({ error: "github_unreachable" }, { status: 502 });
-  }
-}
-
-/** POST /api/github/backup — restore the account from the stored Gist. */
-export async function POST() {
-  const user = await currentUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-  const creds = await getPat(user.id);
-  if (!creds?.gistId) return NextResponse.json({ error: "no_backup" }, { status: 400 });
-
-  try {
-    const res = await fetch(`${GH}/gists/${creds.gistId}`, {
-      headers: ghHeaders(creds.pat),
-      signal: AbortSignal.timeout(20_000),
-    });
-    if (!res.ok) return NextResponse.json({ error: "gist_fetch_failed", status: res.status }, { status: 502 });
-    const gist = (await res.json()) as { files?: Record<string, { content?: string }> };
-    const raw = gist.files?.[FILE_NAME]?.content;
-    if (!raw) return NextResponse.json({ error: "no_backup_file" }, { status: 404 });
-    if (raw.length > 5 * 1024 * 1024) return NextResponse.json({ error: "backup_too_large" }, { status: 413 });
-
-    const data = JSON.parse(raw);
-    if (!validateBackup(data)) return NextResponse.json({ error: "invalid_backup" }, { status: 422 });
-
-    await restoreData(user.id, data);
-    return NextResponse.json({
-      ok: true,
-      restored: {
-        tasks: (data.tasks as unknown[]).length,
-        notes: (data.notes as unknown[]).length,
-        projects: (data.projects as unknown[]).length,
-      },
-    });
-  } catch (e) {
-    const msg = e instanceof Error && e.name === "SyntaxError" ? "invalid_backup" : "github_unreachable";
-    return NextResponse.json({ error: msg }, { status: msg === "invalid_backup" ? 422 : 502 });
   }
 }
