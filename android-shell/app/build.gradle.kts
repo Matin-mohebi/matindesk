@@ -34,7 +34,7 @@ android {
         signingConfigs {
             create("release") {
                 val tmp = File.createTempFile("matindesk", ".jks")
-                tmp.writeBytes(Base64.getDecoder().decode(ksB64))
+                tmp.writeBytes(Base64.getDecoder().decode(requireNotNull(ksB64)))
                 storeFile = tmp
                 storePassword = ksPassword
                 keyAlias = keyAliasValue
