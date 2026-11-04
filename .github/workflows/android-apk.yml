@@ -70,16 +70,22 @@ jobs:
         if: env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' && env.KEY_ALIAS != '' && env.KEY_PASSWORD != ''
         run: gradle -p android-shell assembleRelease -PappUrl="${{ steps.url.outputs.url }}"
 
-      - name: Upload artifacts
+      - name: Upload debug APK for testing
         uses: actions/upload-artifact@v4
         with:
-          name: matindesk-apk
-          path: |
-            android-shell/app/build/outputs/apk/release/*.apk
-          if-no-files-found: warn
+          name: matindesk-debug-apk
+          path: android-shell/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+      - name: Upload signed release APK
+        if: env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' && env.KEY_ALIAS != '' && env.KEY_PASSWORD != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: matindesk-release-apk
+          path: android-shell/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
 
       - name: Release on tag
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') && env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' && env.KEY_ALIAS != '' && env.KEY_PASSWORD != ''
         uses: softprops/action-gh-release@v2
         with:
           files: |
