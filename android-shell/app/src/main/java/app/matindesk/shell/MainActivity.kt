@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                 useWideViewPort = true
                 loadWithOverviewMode = true
                 mediaPlaybackRequiresUserGesture = false
-                mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             }
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
