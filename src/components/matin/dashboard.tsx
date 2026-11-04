@@ -49,6 +49,11 @@ export default function Dashboard() {
   const greeting = hour < 5 ? t.greetingNight : hour < 12 ? t.greetingMorning : hour < 17 ? t.greetingAfternoon : hour < 21 ? t.greetingEvening : t.greetingNight;
   const today = todayISO();
   const todayTasks = tasks.filter((x) => x.status !== "done" && x.dueDate === today);
+  const todayScheduled = tasks.filter((x) => x.dueDate === today);
+  const todayDone = todayScheduled.filter((x) => x.status === "done").length;
+  const focusPercent = todayScheduled.length > 0
+    ? Math.round((todayDone / todayScheduled.length) * 100)
+    : 0;
   const upcoming = [...events].filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 4);
 
   const localPending = tasks.filter((x) => x.status !== "done").length;
@@ -86,6 +91,36 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Today's focus — compact progress and direct access to the task list */}
+      <section className="matin-panel rounded-2xl border p-4 sm:p-5 anim-fade-up-1">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-primary">
+              {settings.locale === "fa" ? "تمرکز امروز" : settings.locale === "ar" ? "تركيز اليوم" : "TODAY'S FOCUS"}
+            </p>
+            <h3 className="mt-1 text-base font-bold">
+              {settings.locale === "fa" ? "قدم‌به‌قدم پیش برو" : settings.locale === "ar" ? "تقدّم خطوة بخطوة" : "Make progress, one step at a time"}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {todayScheduled.length === 0
+                ? (settings.locale === "fa" ? "برای امروز وظیفه‌ای زمان‌بندی نشده است." : settings.locale === "ar" ? "لا توجد مهام مجدولة لليوم." : "No tasks scheduled for today.")
+                : settings.locale === "fa"
+                  ? `${fmtNum(todayDone, settings.locale)} از ${fmtNum(todayScheduled.length, settings.locale)} کار امروز انجام شده است.`
+                  : settings.locale === "ar"
+                    ? `${fmtNum(todayDone, settings.locale)} من ${fmtNum(todayScheduled.length, settings.locale)} مهام اليوم مكتملة.`
+                    : `${todayDone} of ${todayScheduled.length} tasks completed today.`}
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => quick("tasks")}>
+            {settings.locale === "fa" ? "رفتن به کارها" : settings.locale === "ar" ? "عرض المهام" : "Open tasks"}
+          </Button>
+        </div>
+        <div className="mt-4 flex items-center gap-3">
+          <Progress value={focusPercent} className="h-2.5 flex-1" />
+          <span className="num min-w-10 text-end text-xs font-bold text-primary">{fmtNum(focusPercent, settings.locale)}٪</span>
+        </div>
+      </section>
 
       {/* stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 anim-fade-up-1">

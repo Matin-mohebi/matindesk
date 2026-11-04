@@ -1,3 +1,5 @@
+**Android build:** `1.0.1` (`versionCode 2`) — next build; the latest published release remains `v1.0.0` until a signed release is created.
+
 <div dir="rtl">
 
 # 🗂 MatinDesk — میزکار ماتین
@@ -14,6 +16,16 @@
 </div>
 
 ---
+
+## 🏷️ نسخهٔ فعلی | Current Release
+
+- **آخرین نسخهٔ منتشرشده:** [MatinDesk v1.0.0](https://github.com/Matin-mohebi/matindesk/releases/tag/v1.0.0) — ۲ نوامبر ۲۰۲۶
+- **نسخهٔ Android:** 1.0.0 · **versionCode:** 1 · حداقل Android 7.0 (API 24)
+- **نسخه‌های دسکتاپ:** نصب‌کنندهٔ Windows x64 و macOS Apple Silicon در Release موجودند.
+- **دانلود:** [صفحهٔ Releases](https://github.com/Matin-mohebi/matindesk/releases) · [ساخت‌های آزمایشی](https://github.com/Matin-mohebi/matindesk/actions)
+- **تاریخچهٔ تغییرات:** [Releases](https://github.com/Matin-mohebi/matindesk/releases) و [Commits](https://github.com/Matin-mohebi/matindesk/commits/main)
+
+**وضعیت APK:** در Release فعلی، `MatinDesk-v1.0.0-debug.apk` نسخهٔ آزمایشی است. فایل `app-release-unsigned.apk` امضای انتشار ندارد و برای نصب یا به‌روزرسانی عادی توصیه نمی‌شود. نسخهٔ Release امضاشده فقط پس از تنظیم keystore اختصاصی ساخته خواهد شد.
 
 ## ✨ امکانات
 
