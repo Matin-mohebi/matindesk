@@ -75,13 +75,13 @@ class MainActivity : AppCompatActivity() {
                 loadWithOverviewMode = true
                 mediaPlaybackRequiresUserGesture = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    safeBrowsingEnabled = true
+                }
                 javaScriptCanOpenWindowsAutomatically = false
                 allowFileAccess = false
                 allowContentAccess = false
                 setSupportMultipleWindows(false)
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                WebView.setSafeBrowsingEnabled(true)
             }
             webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
